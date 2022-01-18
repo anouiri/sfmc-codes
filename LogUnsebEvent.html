@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Opt Out</title>
+        <link rel="stylesheet" href="https://pub.s11.exacttarget.com/3yg2cjewde5" type="text/css">
+    </head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () { });
+            function myFunction() {
+            var checkBox = document.getElementById("myCheck");
+            if (checkBox.checked == true){}
+            else {
+                event.preventDefault();
+                alert("Please confirm for Unsubscribe");
+            }
+        }
+    </script> 
+<body>
+    <form method="post" action="https://pub.s11.exacttarget.com/uq5rjteeig4?jobid=%%jobid%%&amp;listid=%%listid%%">
+        <div class="center">
+            <img class="image" src="https://image.s11.sfmc-content.com/lib/fe3815717564047b7c1270/m/1/15dd9635-fdd0-478b-9c36-fa14172427f7.jpg" alt="Algoworks">
+        </div>
+        <h1 class="center">We're sorry to see you go!</h1><br/>
+        <div class="center">
+            <p id="paragraph">Please check the checkbox and Submit it if you want to Unsubscribe from our emails</p>
+        </div>
+        <br/><br/>
+        <div class="center">
+            <input type="checkbox" id="myCheck">&nbsp;Unsubscribe<br><br>
+            <input type="submit" class="button" value="unsubscribe" onclick="myFunction()">
+            <input type="hidden" id="SubKey" name="SubKey" value="%%_subscriberkey%%">
+        </div>
+    </form>
+</body>
+</html>
