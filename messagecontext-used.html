@@ -1,0 +1,26 @@
+<!--%%[
+  if (_MessageContext == "PREVIEW") then
+    ]%% -->
+<div min-height="150px" style="background-color: #f0f0f0;">
+  <center><span style="color: #3f3f3f; font-size: 16px; line-height: 50px;">This is initialization block for variables. Click to edit {AMPScript}.</span></center>
+</div>
+<!-- %%[
+  endif
+
+  if (_MessageContext == "SEND") then
+    /* ********************************* *
+     * DO NOT MODIFY THESE VARIABLES BELOW *
+     * ********************************* */
+
+    set @AudienceName = [_DataSourceName]
+    set @LocalSendTime = SystemDateToLocalDate(GetSendTime())
+    
+    /* Anything else please add below */ 
+    
+    set @subKey = _subscriberkey
+    set @email = emailaddr
+    set @firstName = ProperCase([First Name])
+    
+    set @ctaURL = CloudPagesURL(FORM_PAGE_ID, 'fn', @firstName, 'ck', @subKey)
+  endif
+]%% -->
