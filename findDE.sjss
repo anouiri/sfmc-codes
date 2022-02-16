@@ -1,0 +1,159 @@
+<script runat=server>
+Platform.Load("Core","1.1.1");
+
+var prox = new Script.Util.WSProxy(); // Sets the Proxy - DO NOT CHANGE
+var custKey = "DE_Inventory"; //External Key of the DE that will hold all the data we gather
+var buID = Platform.Recipient.GetAttributeValue('memberid') //Sets the ID of current BU
+
+try { //Will attempt to run the below stuff
+  var deArr = getAllDeInfo();  //returns all the DE info from this Business Unit 
+  var clear = clearDE(custKey)  //Clears out old records to ensure deletions are removed from the existing records
+
+  for (var a=0; a<deArr.length;a++) { //Iterate through the array holding each of the objects from the DE info return
+    var deData = deArr[a].Results;  //Set the Object for us to pull
+
+    for (var e=0; e<deData.length; e++) { //iterate through the Results of that object, setting each value
+      var name = deData[e].Name
+
+      if(name.indexOf("QueryStudioResults") < 0) {  //Condition to remove Query Studio DEs
+        //Sets variables pulling in the meta data of the DEs
+        var customerkey = deData[e].CustomerKey
+        var desc = deData[e].Description
+        var catID = deData[e].CategoryID
+        var isSendable = deData[e].IsSendable
+        var sendableDEField = deData[e].SendableDataExtensionField
+        var sendableSubField = deData[e].SendableSubscriberField
+        var deRetentionLength = deData[e].DataRetentionPeriodLength
+        var deRetentionUnit = deData[e].DataRetentionPeriodUnitOfMeasure
+        var deRowRetention = deData[e].RowBasedRetention
+        var deResetRetention = deData[e].ResetRetentionPeriodOnImport
+        var deDeleteRetention = deData[e].DeleteAtEndOfRetentionPeriod
+        var deRetainUntil = deData[e].RetainUntil
+        var deRetentionPeriod = deData[e].DataRetentionPeriod
+        var sendableDEName = sendableDEField ? sendableDEField.Name : '';
+        var sendableSubName = sendableSubField ? sendableSubField.Name : '';
+  
+        //Massages the data retention information into a more readable format
+        var dataRetentionPolicyType;
+        var dataRetentionPolicy = deRetentionLength + ' ' + deRetentionPeriod;
+
+        if(deRowRetention) {
+            dataRetentionPolicyType = "Individual Records"
+        } else if(!deRowRetention && (Date.parse(deRetainUntil) > 0 && deDeleteRetention)) {
+            dataRetentionPolicyType = "Remove All Data"
+        } else if(!deRowRetention && (Date.parse(deRetainUntil) > 0 && !deDeleteRetention)) {
+            dataRetentionPolicyType = "Remove All Data and DE"
+        } else {
+            dataRetentionPolicyType = "N/A"
+        }
+
+        //Call the Core function for getting field array
+        var myDE = DataExtension.Init(customerkey)
+        var fieldObj = myDE.Fields.Retrieve()
+
+        //Call the AMPscript function to return DE rowcounts 
+        var rowCount = Platform.Function.TreatAsContent('%'+'%=DataExtensionRowCount("' + name + '")=%' + '%');
+
+        //Pulls the folder path of the data extension
+        //Special thanks to Zuzanna for this from her article on SFMarketing.cloud
+        var list = [];
+          list.push(name);
+        var path = function(id) {
+            if (id> 0) {
+                var results = Folder.Retrieve({Property:"ID",SimpleOperator:"equals",Value:id});
+
+                if(results) {
+                  list.unshift(results[0].Name);
+                  return path(results[0].ParentFolder.ID);
+                } else {
+                  list = ['error in path retrieve']
+                  return list;
+                }
+            } else {
+                return id;
+            }
+        };
+        path(catID);
+        folderPath = list.join("> ");
+                                      
+        var nameArr = ["Description","CategoryID","FolderPath","IsSendable","SendableDEField","SendableSubField","Fields","RowCount","RetentionPolicy","RetentionPolicyType"]
+        // Array of Non Primary Key names to pass to Data Extension as Column Names
+
+        var valueArr = [desc,catID,folderPath,isSendable,sendableDEName,sendableSubName,Stringify(fieldObj),rowCount,dataRetentionPolicy,dataRetentionPolicyType]
+        //Array of Non Primary Key values to pass to Data Extension as Column Values
+
+        if(deRetainUntil) { nameArr.push("RetainUntil"); valueArr.push(deRetainUntil); }
+          //Pushes the Retain Until into Name/Value array if it exists. If not, then removes from upsert. This prevents the date being displayed as 1/1/1900 if null.
+
+        var upsertDeInfo = Platform.Function.UpsertData(custKey, ["MID","Name", "CustomerKey"], [buID, name, customerkey], nameArr, valueArr)
+        //Upserts the pulled value into the data extension, using the above primary keys
+
+      } //end condition to remove Query Studio
+    } // end Results iterative
+  } // end Array of DE Objects iterative
+
+} catch(e) { // Instead of tossing an error or exception, this will display the error in an output
+
+ Write(Stringify(e)) // Writes the error object to the page
+
+}
+
+function getAllDeInfo() {
+  var cols = [
+    "ObjectID"
+    //,"PartnerKey"
+    ,"CustomerKey"
+    ,"Name"
+    ,"CategoryID"
+    ,"CreatedDate"
+    ,"ModifiedDate"
+    ,"Client.ID"
+    ,"Description"
+    ,"IsSendable"
+    ,"SendableDataExtensionField.Name"
+    ,"SendableSubscriberField.Name"
+    ,"Template.CustomerKey"
+    ,"CategoryID"
+    //,"Status"
+    //,"IsPlatformObject"
+    ,"DataRetentionPeriodLength"
+    ,"DataRetentionPeriodUnitOfMeasure"
+    ,"RowBasedRetention"
+    ,"ResetRetentionPeriodOnImport"
+    ,"DeleteAtEndOfRetentionPeriod"
+    ,"RetainUntil"
+    ,"DataRetentionPeriod"
+  ];
+
+  var reqID = null
+  var moreData = true;
+  var desc = [];
+
+  while(moreData) {
+    moreData = false;
+    var data = reqID == null ?
+      prox.retrieve("DataExtension", cols, filter):
+      prox.getNextBatch("DataExtension", reqID);
+    //Write(Stringify(data) + '\r\n\r\n')
+    if(data != null) {
+      moreData = data.HasMoreRows;
+      reqID = data.RequestID;
+      if(data && data.Results) {
+        desc.push(data);
+      }
+    }
+  }
+
+  return desc;
+}
+
+function clearDE(custKey) {
+  var action = "ClearData";
+  var props = {
+          CustomerKey: custKey
+  };
+  var data = prox.performItem("DataExtension", props, action);
+
+  return data;
+}
+</script>
