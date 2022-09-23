@@ -1,0 +1,844 @@
+%%[
+
+
+VAR @subkey, @email, @url_CRUD_Email_Preference
+
+
+
+SET @debug = 'true'
+                       
+
+
+SET @subkey = _subscriberkey
+SET @url_CRUD_Email_Preference = 'https://mccwfjxqw7wcpklv-m5hryn9pdy1.pub.sfmc-content.com/5npkcngsk2x'
+SET @email= emailaddr
+SET @custId= Lookup('ENT.CONTACTS_BB','CUSTOMER_ID','Contact_ID', @subKey)  
+SET @Driver_Id= Lookup('ENT.CONTACTS_BB','Driver_ID','Contact_ID', @subKey)
+SET @salesforceId= Lookup('ENT.CONTACTS_BB','AccountId','Contact_ID', @subKey)
+SET @lang = Lookup('ENT.CONTACTS_BB','Address_Country_Code','Contact_ID', @subKey)
+
+
+/*-----------------------------------------------Labelling for each langage------------------------------------------------*/  
+
+IF @lang == 'de' THEN
+SET @NLProgram = 'DE'
+SET @PreferenceCenterTitle = "Ihre E-Mail Präferenzen"
+SET @labelUncheck = "Sind Sie sicher, dass Sie sich von allen Newslettern abmelden möchten? Um den Abmeldevorgang abzuschließen, können Sie hier ganz einfach einstellen, welche Emails Sie erhalten möchten und welche nicht.<br><br>Klicken Sie die Themen an, die Sie weiterhin interessieren und lassen Sie die Themen frei, zu denen Sie keine weiteren Newsletter erhalten möchte. Klicken Sie anschließend auf Senden:"
+SET @labelButton = "Aktualisieren"
+SET @checkboxLabelNewsletter = "Neuigkeiten und exklusive Angebote"
+SET @feedbackLabel = "Wir würden gerne erfahren, warum Sie unseren Newsletter nicht mehr erhalten möchten."
+SET @feedback1 = "Es waren zu viele E-Mails"
+SET @feedback2 = "Die E-Mails waren nicht relevant"
+SET @feedback3 = "Ich bin an diesem Thema nicht mehr interessiert"
+SET @feedback4 = "Ich habe mich niemals für einen Newsletter von europcar angemeldet"
+SET @feedback5 = "Erneut anmelden"
+SET @updateMessage = "Ihre gewünschten Einstellungen wurden übernommen."
+SET @rentVehicle = "Möchten Sie einen Mietwagen buchen?"
+SET @newBooking = "Eine neue Buchung tätigen"
+SET @europcarPartnersOffers = "Exklusive Deals mit Buchbinder Partnern"
+SET @aboutYourRentalLabel = "Informationen über Ihre Anmietung"
+SET @preferencelabel = "Neuigkeiten über Ihre Privilege-Mitgliedschaft"
+SET @SubmitButtonLabel = "Senden"
+SET @PrivacyPolicyLink ="https://www.buchbinder.de/de/weitere-informationen/datenschutz"
+SET @PrivacyPolicyLabel ="Datenschutzrichtlinie"
+SET @ExplanationLabelNewsletter ="Erfahren Sie als erstes von unseren neuesten Angeboten, Produktneuerungen und Inspirationen rund um Buchbinder."
+SET @ExplanationLabelPartners ="Erhalten Sie exklusive Angebote von unseren Buchbinder Partnern."
+SET @ExplanationLabelAboutUrRental ="Erhalten Sie Empfehlungen und wichtige Tipps zu Ihrer Anmietung, um ein sorgenfreies Fahrerlebnis sicherzustellen."
+SET @ExplanationLabelPrivilege = concat('Verpassen Sie keine Neuigkeiten rund um Ihre Privilege-Mitgliedschaft und exklusive Angebote für Mitglieder. Einzelheiten zu der gesamten Privilege-Kommunikation sind verfügbar in', ' <a href="https://www.europcar.com/files/live/sites/Europcar/files/Privilege/Conditions/CGL_DE_DE.pdf" style="color:#555;">', '<u>den Allgemeinen Geschäftsbedingungen des Privilege Programms</u>', '</a>.')
+
+ELSE
+SET @NLProgram = 'COM'
+SET @PreferenceCenterTitle = "Email preference"
+SET @labelUncheck = "Are you sure you want to unsubscribe from all emails? <br> Untick the types of emails you no longer wish to receive. Tick any emails that you would like to start receiving:"
+SET @labelButton = "Update"
+SET @checkboxLabelNewsletter = "About news and special offers"
+SET @ExplanationLabelNewsletter ="Be the first to hear about our latest news, discounts, new products, range of vehicles and inspiration from Buchbinder"
+SET @feedbackLabel = "We’d love to get some feedback on why you’re unsubscribing."
+SET @feedback1 = "Emails were too frequent"
+SET @feedback2 = "Emails were not relevent"
+SET @feedback3 = "No longer interested in this content"
+SET @feedback4 = "I never signed up from Europcar"
+SET @feedback5 = "I am already subscribed"
+SET @updateMessage = "Your email preferences have been updated"
+SET @rentVehicle = "Do you need to rent a vehicle ?"
+SET @newBooking = "Make a new booking"
+SET @europcarPartnersOffers = "About exclusive deals from Buchbinder partners"
+SET @ExplanationLabelPartners ="Receive Buchbinder exclusive offers from our partners"
+SET @aboutYourRentalLabel = "About your rental"
+SET @ExplanationLabelAboutUrRental ="Get recommendations and important advice to complete your reservation with similar products and services and drive with total peace of mind"
+SET @preferencelabel = "Your Privilege membership"
+SET @ExplanationLabelPrivilege = concat('Receive regular news and member-only offers from your loyalty program. Details on all Privilege communications are available in the', ' <a href="https://www.europcar.com/files/live/sites/Europcar/files/Privilege/Conditions/CGL_EN_COM.pdf" style="color:#555;">', '<u>Privilege Terms & Conditions</u>', '</a>.')
+SET @SubmitButtonLabel = "Submit"
+SET @PrivacyPolicyLink ="https://www.buchbinder.de/en/further-information/data-protection"
+SET @PrivacyPolicyLabel ="Privacy Policy"
+
+ENDIF
+/*-----------------------------------------------End of Labelling for each langage------------------------------------------------*/
+]%%
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <!--Import materialize.css -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>  
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <!-- Jquery Css for Plugins -->
+    <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet"/>
+    <!--Let browser know website is optimized for mobile-->
+    <meta charset="utf-8"/>      
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Buchbinder Preference Center</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css"/>
+
+  </head>
+
+ <body>
+    <div id="blocAll">
+      <div class="container-fluid">
+        <div class="row">
+          <div id="header"></div>
+        </div>
+      </div>
+   
+      <section id="titleLib" class="bg-primary">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12 padHead" id="pageTitle">
+              <h1>%%=v(@PreferenceCenterTitle)=%%</h1>
+            </div>
+          </div>
+        </div>
+      </section>  
+     
+     
+          <!-- Start Row -->
+      <section id="formLib" class="bg-primary">
+        <div class="container">
+
+          <div class="row">
+            <div class="col-md-2" ></div>
+            <div id="blocForm" class="col-lg-12">
+              <form id="formPrefCenter" method="POST">
+                <div id="firstStep">
+                  <div class="row">
+                    <div class="col-lg-12 col-sm-12">
+                      <div class="form-group">
+                        <div class="input-group">
+                          <div class="input-group-addon">
+                            <span class="glyphicon glyphicon-envelope"></span>
+                          </div>
+                          <input type="text" style="width:40%; min-width:160px;" class="form-control" name="email" id="email" value="%%=v(@email)=%%" readonly />
+                        </div>                
+                      </div>
+                    </div>
+
+                    <br/>
+                    <br/>
+                    <hr class="primary" />
+                    <div class="col-lg-12 col-sm-12">
+                      <p>%%=v(@labelUncheck)=%%</p>
+                    </div>
+                  </div>
+                  <br/>
+                 
+                  %%[
+                  IF @subkey != "" THEN
+                        
+                        SET @rows_OptIn_subkey = ROWCOUNT(LookupRows('ENT.OPT_IN_BB',"Contact_ID", @subkey))
+                        
+                       IF  @rows_OptIn_subkey>0 THEN
+                       
+                            SET @row_Newsletter = LOOKUPROWS('ENT.OPT_IN_BB','CONTACT_ID', @subkey, 'Subscription Type','Newsletter')
+                           if  rowcount(@row_Newsletter) > 0 then
+                              SET @Newsletter = FIELD(Row(@row_Newsletter,1), "Subscription_Optin") 
+                            ENDIF
+                            
+                            
+                           SET @row_Partner_Optin = LOOKUPROWS('ENT.OPT_IN_BB','CONTACT_ID', @subkey, 'Subscription Type','Partners')  
+                           if  rowcount(@row_Partner_Optin) > 0 then
+                            SET @Partner_Optin = FIELD(Row(@row_Partner_Optin,1),"Subscription_Optin")
+                            ENDIF
+                            
+                            SET @row_AboutYourRental = LOOKUPROWS('ENT.OPT_IN_BB','CONTACT_ID', @subkey, 'Subscription Type', 'About Your Rental')
+                              if  rowcount(@row_AboutYourRental) > 0 then
+                            SET @AboutYourRental = FIELD(Row(@row_AboutYourRental,1), "Subscription_Optin")
+                            ENDIF
+                        ENDIF
+                        
+                        
+                      
+                       
+                  
+                  ENDIF
+                  ]%%
+
+                     
+                
+                  
+                  %%[IF @Newsletter == 'True' THEN]%%  
+                  <input type="checkbox" class=" customForms" id="Newsletter" name="%%=v(@Subscription_type)=%%" checked="true" value = "true">
+                  <label style="vertical-align: middle;height: 32px;margin-left: 1%;" >%%=v(@checkboxLabelNewsletter)=%%</label><br>
+                  <div class="col-lg-12 col-sm-12" style="margin-left: 3%;" >
+                    <p>%%=v(@ExplanationLabelNewsletter)=%%</p>
+                  </div>
+                  %%[ELSE]%%
+                  <input type="checkbox" class=" customForms" id="Newsletter" name="%%=v(@Subscription_type)=%%" type="checkbox">
+                  <label style="vertical-align: middle;height: 32px;margin-left: 1%;" >%%=v(@checkboxLabelNewsletter)=%%</label><br>
+                  <div class="col-lg-12 col-sm-12" style="margin-left: 3%;" >
+                    <p>%%=v(@ExplanationLabelNewsletter)=%%</p>
+                  </div>
+                  %%[ENDIF]%%
+
+
+                  
+                  %%[IF @Partner_Optin == 'True' THEN]%%  
+                  <input type="checkbox" class=" customForms" id="Partner" name="%%=v(@Subscription_type)=%%" checked="true" value = "true">
+                  <label style="vertical-align: middle;height: 32px;margin-left: 1%;" >%%=v(@europcarPartnersOffers)=%%</label><br>  
+
+                  <div class="col-lg-12 col-sm-12" style="margin-left: 3%;">
+                    <p>%%=v(@ExplanationLabelPartners)=%%</p>
+                  </div>
+                  %%[ELSE]%%
+                  <input type="checkbox" class=" customForms" id="Partner" name="%%=v(@Subscription_type)=%%" type="checkbox">
+                  <label style="vertical-align: middle;height: 32px;margin-left: 1%;" >%%=v(@europcarPartnersOffers)=%%</label><br>  
+                  <div class="col-lg-12 col-sm-12" style="margin-left: 3%;">
+                    <p>%%=v(@ExplanationLabelPartners)=%%</p>
+                  </div>
+                  %%[ENDIF]%%
+
+                  
+                  %%[IF @AboutYourRental == 'True' THEN]%% 
+                  <input type="checkbox" class=" customForms" id="Rental" name="%%=v(@Subscription_type)=%%"  checked="true" value = "true">
+                  <label style="vertical-align: middle;height: 32px;margin-left: 1%;"  >%%=v(@aboutYourRentalLabel)=%%</label><br>
+                  <div class="col-lg-12 col-sm-12" style="margin-left: 3%;">
+                    <p>%%=v(@ExplanationLabelAboutUrRental)=%%</p>
+                  </div>
+                   %%[ELSE]%%
+                  <input type="checkbox" class=" customForms" id="Rental" name="%%=v(@Subscription_type)=%%" type="checkbox" >
+                  <label style="vertical-align: middle;height: 32px;margin-left: 1%;"  >%%=v(@aboutYourRentalLabel)=%%</label><br>
+                  <div class="col-lg-12 col-sm-12" style="margin-left: 3%;">
+                    <p>%%=v(@ExplanationLabelAboutUrRental)=%%</p>
+                  </div>
+                  %%[ENDIF]%%
+               
+                  
+                  
+                  
+                  
+                   <!-- DEBUG Row -->
+                    %%[IF @debug == "true" THEN ]%%  
+                 <h3>
+                   debug set to %%=v(@debug)=%%  test 14:14 for %%firstname%%
+                  </h3> 
+
+
+<br>
+                  
+                  
+               
+                   <p>
+                 rows_OptIn_subkey:   %%=v(@rows_OptIn_subkey)=%%
+                  </p>
+                <p>
+                 subkey:   %%=v(@subkey)=%%
+                  </p>
+  <p>
+                 email:   %%=v(@email)=%%
+                  </p>
+
+
+
+  <p>
+                 custId:   %%=v(@custId)=%%
+                  </p>
+
+ <p>
+                 Driver_Id:   %%=v(@Driver_Id)=%%
+                  </p>
+
+ <p>
+                 salesforceId:   %%=v(@salesforceId)=%%
+                  </p>
+
+ <p>
+                 lang:   %%=v(@lang)=%%
+                  </p>
+
+
+
+                  <p> 
+                 Newsletter:   %%=v(@Newsletter)=%%
+                  </p>
+                   <p>
+                 Partner_Optin:   %%=v(@Partner_Optin)=%%
+                  </p>
+                   <p>
+                 AboutYourRental:   %%=v(@AboutYourRental)=%%
+                  </p>
+                  
+                  
+                    <p>
+                 email:   %%=v(@email)=%%
+                  </p>
+                  
+                  
+                 <p>
+                   row_Newsletter: %%=v(rowcount(@row_Newsletterrowcount))=%%
+                  </p> 
+                    %%[ENDIF]%%
+                  <!-- DEBUG Row -->
+                 
+                 
+                  <!-- Next Page button -->
+                  <div class="row" style="margin-top: 10%;">
+                    <div class="col-lg-offset-3 col-lg-6 col-sm-offset-3 col-lg-offset-6">
+                      <!--<button type="button" id="btnNextPage" class="btn">%%=v(@labelButton)=%%</button>-->
+                      <button type="button" id="btnSubmitForm" class="btn"><b>%%=v(@SubmitButtonLabel)=%%</b></button>
+                      <a href="%%=RedirectTo(@PrivacyPolicyLink)=%%" target="_blank"><u>%%=v(@PrivacyPolicyLabel)=%%</u></a>
+                    </div>
+                  </div>
+                </div>
+                <!-- This is the second step = second page -->
+                <div id="secondStep">
+                  <p>%%=v(@feedbackLabel)=%%</p>
+                  <div class="radio_class">
+                    <label class="control-label">
+                      <input type="radio" name="optionsRadios" id="optionsRadios1" value="%%=v(@feedback1)=%%">%%=v(@feedback1)=%%
+                    </label>
+                  </div>
+                  <div class="radio_class">
+                    <label class="control-label">
+                      <input type="radio" name="optionsRadios" id="optionsRadios2" value="%%=v(@feedback2)=%%">%%=v(@feedback2)=%%
+                    </label>
+                  </div>
+                  <div class="radio_class">
+                    <label class="control-label">
+                      <input type="radio" name="optionsRadios" id="optionsRadios3" value="%%=v(@feedback3)=%%">%%=v(@feedback3)=%%
+                    </label>
+                  </div>
+                  <div class="radio_class">
+                    <label class="control-label">
+                      <input type="radio" name="optionsRadios" id="optionsRadios4" value="%%=v(@feedback4)=%%">%%=v(@feedback4)=%%
+                    </label>
+                  </div>
+                  <div class="radio_class">
+                    <label class="control-label">
+                      <input type="radio" name="optionsRadios" id="optionsRadios5" value="%%=v(@feedback5)=%%" >%%=v(@feedback5)=%%
+                    </label>
+                  </div>
+ 
+                  <br><br>
+
+                  <div class="row" >
+                    <!-- bAck button -->
+                    <span >
+                      <button type="button" id="btnBack" class="btn">Back</button>
+                    </span>
+                    <span style="margin-left: 25%;"  >
+                      <button type="button" id="btnSubmitForm" class="btn"><b>%%=v(@SubmitButtonLabel)=%%</b></button>
+                    </span>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+ 
+
+    <!--  Custom CSS -->
+    <style>
+
+      /*** Slider ***/
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+      }
+
+      .switch input {display:none;}
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      input:checked + .slider {
+        background-color: #009900;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px #009900;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+      }
+
+      .slider.round {
+        border-radius: 34px;
+      }
+
+      .slider.round:before {
+        border-radius: 50%;
+      }
+
+      #ECLogo {
+        margin-left : 15%;
+        display : block;
+      }
+
+      #btnNextPage {
+        radius : 5px;
+        background-color : #FFDD00;
+        width : 228px;
+        font-size : 18px!important;
+        font-weight: bold;
+      }
+
+      #btnSubmitForm {
+        radius : 5px;
+        background-color : #2cb0e6;
+        height : 50px;
+        width : 228px;
+        font-size : 18px!important;
+        color: #ffffff;
+      }
+
+      #formPrefCenter td {
+        font-size : 16px;
+        font-weight : bold;
+      }
+
+      #tdUpdate {
+        text-align:center;
+      }
+
+      #pageTitle{
+        font-weight : bold;
+        text-align : left;
+      }
+
+      #btnUnsubAll{
+        border-radius : 30px;
+        height : 25px;
+        width : 25px;
+        background : #FFFFFF;
+        color: #009900;
+        font-size : 18px!important;
+      }
+
+      #btnUnsub {
+        border-radius : 30px;
+        height : 25px;
+        width : 25px;
+        background : #FFFFFF;
+        color: #009900;
+        font-size : 18px!important;
+      }
+
+      .customForms {
+        border-radius : 30px;
+        height : 25px;
+        width : 25px;
+        background : #FFFFFF;
+        color: #009900;
+        font-size : 18px!important;
+      }
+
+      #blocAll {
+        background-color: #F0F0F0;
+      }
+
+      .bg-primary {
+        background: #F0F0F0;
+        color: #333333;
+        margin : 10px 0px;
+      }
+
+      .padHead {
+        padding: 10px 20px;
+      }
+
+      h1 {
+        margin : 0px 0px;
+      }
+
+      .bg-primary .container {
+        background-color: #FFFFFF;
+      }
+
+      .btn-europcar {
+        font-size: 18px;
+        color: #333333;
+        letter-spacing: 0;
+        background-color: #FFDD00;
+      }
+
+      #blocForm {
+        background-color : #FFFFFF;
+        border-radius : 5px;
+      }
+
+      body {
+        height: 100vh; /* For 100% screen height */
+        width:  100vw; /* For 100% screen width */
+      }
+
+      #formLib {
+        height: 100vh; /* For 100% screen height */
+      }
+
+      #formLib .container form {
+        padding: 5% 2%;
+      }
+
+      #secondStep {
+        display: none;
+      }
+
+      #header {
+        height: 94px;
+        background-color: rgb(255,255,255);
+        background-image: url('https://image.email.buchbinder-infos.de/lib/fe3111717d64047e731172/m/1/49994847-83aa-40bd-b1da-7168d862a3b8.png');
+        background-size: 187px 91px;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+     
+   
+ 
+     
+      table {
+        border-style:hidden;
+      }
+    </style>
+
+    <!--Import jQuery before materialize.js-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
+
+    <script type="text/javascript">
+      "use strict";
+
+
+      $(document).ready(function() {
+        var subkey = "%%=v(@subkey)=%%";
+        var email = "%%=v(@email)=%%";
+        var Newsletter = "%%=v(@Newsletter)=%%";
+        var Privilege = "%%=v(@Privilege)=%%";
+        var Partner_Optin = "%%=v(@Partner_Optin)=%%";
+        var AboutYourRental = "%%=v(@AboutYourRental)=%%";
+        var PrivilegeFlag ="%%=v(@showPrivilegeCheckbox)=%%";
+        var unscubscription_reason = "";
+
+
+        $('#formPrefCenter :checkbox').change(function() {
+          /*this will contain a reference to the checkbox*/  
+          if (this.checked)
+          {
+            /*the checkbox is now checked*/
+            this.value = "True";
+            //Newsletter = "True";
+            console.log(" this.value :"+this.value);
+          }
+          else
+          {
+            /*the checkbox is now no longer checked*/
+            this.value = "False";
+           // Newsletter = "False";
+            console.log(" this.value :"+this.value);
+          }
+        });
+       
+       
+        /*BACK BUTTON*/
+        $("#btnBack").click(function(){
+          $("#secondStep").fadeOut(function(){
+            $("#firstStep").fadeIn();
+          });
+        });
+ 
+
+        /*Choix de la raison de l'OPT_OUT*/
+        $("#btnNextPage").click(function(){
+          $("#firstStep").fadeOut(function(){
+            $("#secondStep").fadeIn();
+          });
+        });
+
+        $("#btnSubmitForm").click(function(e){
+          e.preventDefault();
+          /*Récupération de la raison de l'OptOut*/
+          var radios = jQuery("input[type='radio']");
+          var unscubscription_reason = radios.filter(':checked').val();
+          email = $("#email").val();
+     
+       
+   
+   
+          /*Récupération de la raison de l'OptOut*/
+          update_preferences();
+        });
+        function update_preferences(){
+          var radios = jQuery("input[type='radio']");
+          var unscubscription_reason = radios.filter(':checked').val();
+          var Newsletter = $("#Newsletter").val();
+          var Privilege = $("#Privilege").val();
+          var Partner_Optin = $("#Partner").val();
+          var AboutYourRental = $("#Rental").val();
+          var NewsletterFromChbx = $("#Newsletter").val();
+          var PrivilegeFromChbx = $("#Privilege").val();
+          var Partner_OptinFromChbx = $("#Partner").val();
+          var AboutYourRentalFromChbx = $("#Rental").val();
+          var NewsletterGet = "%%=v(@Newsletter)=%%";
+          var PrivilegeGet = "%%=v(@Privilege)=%%";
+          var Partner_OptinGet = "%%=v(@Partner_Optin)=%%";
+          var AboutYourRentalGet = "%%=v(@AboutYourRental)=%%";
+          
+           var Newsletter_InsertedAPI = "%%=v(@Newsletter_InsertedAPI)=%%";
+           var privilege_InsertedAPI = "%%=v(@privilege_InsertedAPI)=%%";
+           var abtYrRental_InsertedAPI = "%%=v(@abtYrRental_InsertedAPI)=%%";
+           var Partners_InsertedAPI = "%%=v(@Partners_InsertedAPI)=%%";
+          
+                
+          var newsletterNotChanged = 'true';
+          var aboutUrRentalNotChanged = 'true';
+          var privilegeNotChanged = 'true';
+          var partnersNotChanged = 'true';
+        
+          console.log("NewsletterFromChbx   : "+NewsletterFromChbx);
+          console.log("PrivilegeFromChbx  : "+PrivilegeFromChbx);
+          console.log("Partner_OptinFromChbx  : "+Partner_OptinFromChbx);
+          console.log("AboutYourRentalFromChbx  : "+AboutYourRentalFromChbx);
+          console.log("NewsletterGet   : "+NewsletterGet);
+          console.log("PrivilegeGet  : "+PrivilegeGet);
+          console.log("Partner_OptinGet  : "+Partner_OptinGet);
+          console.log("AboutYourRentalGet  : "+AboutYourRentalGet);
+          
+          if( NewsletterFromChbx.toLowerCase()!='on' &&  NewsletterFromChbx.toLowerCase() != NewsletterGet.toLowerCase()   ){
+            newsletterNotChanged = 'false';
+            Newsletter = NewsletterFromChbx;
+          } else if(NewsletterFromChbx.toLowerCase()=='on'){
+          Newsletter = 'false';
+          }
+ 
+          if(PrivilegeFromChbx!=null){
+            if( PrivilegeFromChbx.toLowerCase()!='on' &&  PrivilegeFromChbx.toLowerCase() != PrivilegeGet.toLowerCase()   ){
+              privilegeNotChanged = 'false';
+              Privilege = PrivilegeFromChbx;
+            }else if(PrivilegeFromChbx.toLowerCase()=='on'){
+              Privilege = 'false';
+            }
+          }
+   
+  
+           if( Partner_OptinFromChbx.toLowerCase()!='on' &&  Partner_OptinFromChbx.toLowerCase() != Partner_OptinGet.toLowerCase()   ){
+            partnersNotChanged = 'false';
+            Partner_Optin = Partner_OptinFromChbx;
+          }else if(Partner_OptinFromChbx.toLowerCase()=='on'){
+          Partner_Optin = 'false';
+          }
+
+          if( AboutYourRentalFromChbx.toLowerCase()!='on' &&  AboutYourRentalFromChbx.toLowerCase() != AboutYourRentalGet.toLowerCase()   ){
+            aboutUrRentalNotChanged = 'false';
+            AboutYourRental = AboutYourRentalFromChbx;
+          }else if(AboutYourRentalFromChbx.toLowerCase()=='on'){
+          AboutYourRental = 'false';
+          }
+          
+          if(Privilege==null){
+             Privilege = 'False';
+          }
+
+          console.log(' newsletterNotChanged  ' + newsletterNotChanged);
+           console.log(' privilegeNotChanged  ' + privilegeNotChanged);
+           console.log(' partnersNotChanged  ' + partnersNotChanged);
+           console.log(' aboutUrRentalNotChanged  ' + aboutUrRentalNotChanged);
+        
+            console.log("Newsletter  : "+Newsletter);
+            console.log("Privilege  : "+Privilege);
+            console.log("Partner_Optin  : "+Partner_Optin);
+            console.log("AboutYourRental  : "+AboutYourRental);
+            console.log("PrivilegeFlag  : "+PrivilegeFlag);
+
+
+          var newsletterID = "%%=v(@newsletterID)=%%";
+          var partnersID = "%%=v(@partnersID)=%%";
+          var abtYrRentID = "%%=v(@abtYrRentID)=%%";
+          var privilegeID = "%%=v(@privilegeID)=%%";
+          var Privilege_Inserted = "%%=v(@Privilege_Inserted)=%%";
+          var Newsletter_Inserted =  "%%=v(@Newsletter_Inserted)=%%";
+          var Partner_Optin_Inserted =  "%%=v(@Partner_Optin_Inserted)=%%";
+          var AboutYourRental_Inserted =  "%%=v(@AboutYourRental_Inserted)=%%";
+          var lang = "%%=v(@lang)=%%";
+          var NLProgram ="%%=v(@NLProgram)=%%" ;
+          var Driver_ID ="%%=v(@Driver_Id)=%%" ;
+          var salesforceId ="%%=v(@salesforceId)=%%" ;
+          var custId ="%%=v(@custId)=%%" ;
+          var accessToken =  "%%=v(@accessToken)=%%" ;
+      
+            var newsletterIsOld =  "%%=v(@newsletterIsOld)=%%";
+          if(newsletterIsOld =='true'){
+            if(Newsletter == 'true' || Newsletter == true ||  Newsletter == 'True'){
+               } else{ Newsletter = 'false';}
+            newsletterNotChanged ='false';
+          }
+          
+           var partnersIsOld =  "%%=v(@partnersIsOld)=%%";
+          if(partnersIsOld =='true'){
+            if(Partner_Optin == 'true' || Partner_Optin == true ||  Partner_Optin == 'True'){
+               } else{ Partner_Optin = 'false';}
+            partnersNotChanged ='false';
+          }
+          
+           var abtYrRentalIsOld =  "%%=v(@abtYrRentalIsOld)=%%";
+          if(abtYrRentalIsOld =='true'){
+            if(AboutYourRental == 'true' || AboutYourRental == true ||  AboutYourRental == 'True'){
+               } else{ AboutYourRental = 'false';}
+            aboutUrRentalNotChanged ='false';
+          }
+          
+          var PrivilegeFlag ="%%=v(@showPrivilegeCheckbox)=%%";
+           var privilegeIsOld =  "%%=v(@privilegeIsOld)=%%";
+         if(PrivilegeFlag==1){
+             if(privilegeIsOld =='true'){
+            if(Privilege == 'true' || Privilege == true ||  Privilege == 'True'){
+               } else{ Privilege = 'false';}
+            privilegeNotChanged ='false';
+          } 
+            }
+
+          var CRUD_URL = "%%=v(@url_CRUD_Email_Preference)=%%";
+          var email_optout_list = {
+            subkey : subkey,
+            unscubscription_reason : '',
+            Newsletter: Newsletter,  
+            Privilege: Privilege,
+            Partner_Optin: Partner_Optin,
+            AboutYourRental: AboutYourRental,
+            PrivilegeFlag: PrivilegeFlag,
+            newsletterID : newsletterID,
+            partnersID : partnersID,
+            abtYrRentID : abtYrRentID,
+            privilegeID : privilegeID,
+            Privilege_Inserted : Privilege_Inserted,
+            Newsletter_Inserted : Newsletter_Inserted,
+            Partner_Optin_Inserted : Partner_Optin_Inserted,
+            AboutYourRental_Inserted : AboutYourRental_Inserted,
+            Language : lang,
+            NLProgram : NLProgram,
+            newsletterNotChanged : newsletterNotChanged,
+            aboutUrRentalNotChanged : aboutUrRentalNotChanged,
+            privilegeNotChanged : privilegeNotChanged,
+            partnersNotChanged : partnersNotChanged,
+            Newsletter_InsertedAPI:Newsletter_InsertedAPI,
+            privilege_InsertedAPI:privilege_InsertedAPI,
+            abtYrRental_InsertedAPI : abtYrRental_InsertedAPI,
+            Partners_InsertedAPI : Partners_InsertedAPI,
+            Driver_ID : Driver_ID,
+            salesforceId : salesforceId,
+            custId : custId,
+            accessToken : accessToken
+            
+          };
+          console.log("Start");
+          console.log(email_optout_list);
+        
+           $.ajax({
+           
+              url: 'https://mccwfjxqw7wcpklv-m5hryn9pdy1.pub.sfmc-content.com/5npkcngsk2x',
+              type: 'POST',
+              data: email_optout_list,  
+              dataType: "text",
+              success: function(results)
+              {
+                console.log(results);
+              },
+              error: function(results)
+              {
+          alert('Error');
+                alert('url '+url);//TODO
+                console.log(results);
+              },
+              complete : function(results){
+                console.log(results);
+                    setTimeout(function ()
+                       {
+               
+              var Newsletter = $("#Newsletter").val();
+              var Privilege = $("#Privilege").val();
+              var Partner_Optin = $("#Partner").val();
+              var AboutYourRental = $("#Rental").val();
+              if(Privilege==null){
+              Privilege='NP'
+              }
+              var pageReference3Parameters = {
+                Newsletter: Newsletter,  
+                Privilege: Privilege,
+                Partner_Optin: Partner_Optin,
+                AboutYourRental: AboutYourRental
+              };
+    
+              var URL = "https://mccwfjxqw7wcpklv-m5hryn9pdy1.pub.sfmc-content.com/syjjcywkqax?Newsletter=" + Newsletter+"&Partner_Optin="+Partner_Optin+"&AboutYourRental="+AboutYourRental+"&NLProgram="+NLProgram;
+                      if(NLProgram=='BE'){
+                        var BElang = "%%=v(@BELang)=%%";
+                      URL = URL + '&lang='  + BElang;
+                      }
+              window.location =URL;
+             
+            }, 1000);
+              }
+            }); 
+       
+
+          /*** REDIRECTION VERS LA PAGE DE CONFIRMATION ***/
+
+        }  
+      });
+
+    </script>
+
+  
+<script>(function(a,m,i,g,o,s){o=a.createElement(g);s=a.getElementsByTagName(i)[0];o.src=m.origin+m.pathname+"/_t?eventType=CLOUDPAGESVISIT";o.width=0;o.height=0;o.style.display="none";s.appendChild(o);})(document,window.location,"body","img");</script>
+
+ <script src="https:&#x2F;&#x2F;7275325.collect.igodigital.com&#x2F;collect.js"></script>
+ <script>
+  if (_etmc && typeof _etmc.push === 'function') {
+   _etmc.push(['setOrgId', '7275325']);
+   _etmc.push(['trackPageView']);
+  }
+ </script>
+
+</body>
+</html>
